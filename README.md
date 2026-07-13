@@ -1,4 +1,4 @@
-# Smart Document Scanner (OCR & Automatic Crop)
+# Smart Document Scanner OCR
 
 Aplikasi berbasis **Python**, **OpenCV**, dan **Flask** untuk melakukan pemindaian dokumen kartu nama secara cerdas. Sistem ini mampu mendeteksi area dokumen, melakukan koreksi perspektif (*automatic crop*), meningkatkan kualitas gambar, mengekstraksi teks menggunakan OCR, serta menghasilkan metadata dalam format JSON. Aplikasi juga mendukung pemrosesan banyak gambar (*batch processing*).
 

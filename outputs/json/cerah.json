@@ -1,0 +1,14 @@
+{
+    "document_detected": true,
+    "rotation_angle": 1.2100000381469727,
+    "processing_time_ms": 1532,
+    "ocr_confidence": 0.92,
+    "image_width": 1120,
+    "image_height": 504,
+    "fields": {
+        "name": "Software Engineer",
+        "company": "NEXORA",
+        "email": "Unknown",
+        "phone": "+62 812-3456-7890"
+    }
+}

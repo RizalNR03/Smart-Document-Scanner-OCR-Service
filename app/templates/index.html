@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Document Scanner</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Memasukkan style.css secara dinamis dari folder templates -->
+    <style>
+        {% include 'style.css' %}
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Document Scanner</h1>
+            <p>Computer Vision Pipeline for Intelligent Business Card Processing</p>
+        </header>
+        
+        <div class="upload-section">
+            <form action="/" method="POST" enctype="multipart/form-data" class="form-group">
+                <input type="file" name="file" accept="image/*" required>
+                <button type="submit">Upload & Jalankan Pipeline</button>
+            </form>
+        </div>
+
+        {% if metadata %}
+        <div class="result-section">
+            
+            <!-- Badging Status Terdeteksi Dinamis -->
+            <div style="text-align: center;">
+                {% if metadata.document_detected %}
+                    <span class="status-badge status-true">✔ BUSINESS CARD DETECTED</span>
+                {% else %}
+                    <span class="status-badge status-false">❌ NO BUSINESS CARD (EMPTY TABLE)</span>
+                {% endif %}
+            </div>
+
+            <!-- Bagian Visual Gambar Step-by-Step -->
+            <div class="grid-visuals">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>1. Input Contour Verification</h3>
+                    </div>
+                    <div class="card-body">
+                        <img src="/static_outputs/{{ debug_img }}?t={{ time }}" alt="Contour Edge">
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>2. Morphological Edge Detection</h3>
+                    </div>
+                    <div class="card-body">
+                        <img src="/static_outputs/{{ edges_img }}?t={{ time }}" alt="Edges Output">
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>3. Top-Down Perspectives (Dewarped)</h3>
+                    </div>
+                    <div class="card-body">
+                        <img src="/static_outputs/{{ enhanced_img }}?t={{ time }}" alt="Enhanced Output">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bagian Data Meta & Ekstraksi Bidang Bidang Teks -->
+            <div class="grid-data">
+                <div class="info-panel">
+                    <h3>Parsed Business Card Fields</h3>
+                    <table class="meta-table">
+                        <tr>
+                            <td>Nama Lengkap</td>
+                            <td><span class="field-badge">{{ metadata.fields.name }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>Perusahaan / Instansi</td>
+                            <td>{{ metadata.fields.company }}</td>
+                        </tr>
+                        <tr>
+                            <td>Alamat Email</td>
+                            <td style="font-family: 'JetBrains Mono', monospace; font-size:0.9rem;">{{ metadata.fields.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nomor Telepon</td>
+                            <td>{{ metadata.fields.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td>Sudut Koreksi Rotasi</td>
+                            <td>{{ metadata.rotation_angle }}°</td>
+                        </tr>
+                        <tr>
+                            <td>Kecepatan Pemrosesan</td>
+                            <td><span style="color: var(--primary)">{{ metadata.processing_time_ms }} ms</span></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Structured JSON Output</h3>
+                    <pre><code>{{ json_data | safe }}</code></pre>
+                </div>
+            </div>
+
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

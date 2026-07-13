@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Processing Results</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        {% include 'style.css' %}
+        
+        .batch-header {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .image-test-row {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+        
+        .row-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header style="text-align: left; margin-bottom: 20px;">
+            <h1>Batch Processing Report</h1>
+            <p>Hasil pengujian massal otomatis untuk seluruh dataset kartu nama Anda.</p>
+        </header>
+
+        <div class="batch-header">
+            <div>
+                <strong>Total Gambar Diproses:</strong> {{ total }} File
+            </div>
+            <a href="/" style="color: var(--primary); font-weight: 600; text-decoration: none;">← Kembali ke Single Upload</a>
+        </div>
+
+        {% for item in results %}
+        <div class="image-test-row">
+            <div class="row-title">
+                <span>📁 {{ item.filename }}</span>
+                {% if item.status.startswith('Gagal') %}
+                    <span class="status-badge status-false" style="margin:0;">⚠️ ERROR: {{ item.status }}</span>
+                {% elif item.detected %}
+                    <span class="status-badge status-true" style="margin:0;">✔ TERDETEKSI ({{ item.time }} ms)</span>
+                {% else %}
+                    <span class="status-badge status-false" style="margin:0;">❌ TIDAK TERDETEKSI / MEJA KOSONG ({{ item.time }} ms)</span>
+                {% endif %}
+            </div>
+
+            {% if item.debug_img %}
+            <!-- Menggunakan String Path Hasil Pemrosesan Python -->
+            <div class="grid-visuals" style="margin-bottom: 20px;">
+                <div class="card">
+                    <div class="card-header"><h3>1. Contour Check</h3></div>
+                    <div class="card-body">
+                        <img src="/static_outputs/{{ item.debug_img }}?t={{ time }}" alt="Contour">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>2. Edges Output</h3></div>
+                    <div class="card-body">
+                        <img src="/static_outputs/{{ item.edges_img }}?t={{ time }}" alt="Edges">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>3. Crop & Dewarped</h3></div>
+                    <div class="card-body">
+                        <img src="/static_outputs/{{ item.enhanced_img }}?t={{ time }}" alt="Enhanced">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Data Hasil Parsing Teks Per Gambar -->
+            <div class="info-panel" style="padding: 15px 20px;">
+                <table class="meta-table">
+                    <tr>
+                        <td><strong>Nama:</strong> {{ item.fields.name }}</td>
+                        <td><strong>Perusahaan:</strong> {{ item.fields.company }}</td>
+                        <td><strong>Email:</strong> <span style="font-family: 'JetBrains Mono', monospace;">{{ item.fields.email }}</span></td>
+                        <td><strong>Phone:</strong> {{ item.fields.phone }}</td>
+                    </tr>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

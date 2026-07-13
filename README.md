@@ -359,9 +359,6 @@ outputs/
 ---
 
 # Author
-
-Technical Test Submission
-
-Image Processing Engineer
+Rizal Naufal Robbani
 
 Python • OpenCV • OCR • Docker

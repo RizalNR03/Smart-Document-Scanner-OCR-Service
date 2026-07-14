@@ -1,4 +1,3 @@
-# main.py
 import os
 import json
 import time
@@ -9,11 +8,10 @@ from app.pipeline import SmartScannerPipeline
 app = Flask(__name__, template_folder='app/templates')
 pipeline = SmartScannerPipeline()
 
-# Inisialisasi struktur direktori wajib tes teknis
 os.makedirs("outputs/debug", exist_ok=True)
 os.makedirs("outputs/processed", exist_ok=True)
 os.makedirs("outputs/json", exist_ok=True)
-os.makedirs("dataset", exist_ok=True) # Tempat menyimpan 5-10 gambar contoh Anda
+os.makedirs("dataset", exist_ok=True) 
 
 def numpy_serializer(obj):
     if hasattr(obj, 'item'):
@@ -40,7 +38,6 @@ def home_and_process():
         try:
             metadata, debug, edges, enhanced = pipeline.process(temp_path)
 
-            # PENAMAAN DINAMIS: Menyimpan file menggunakan nama asli gambar
             debug_path = f"debug/{base_name}_contour.jpg"
             edges_path = f"debug/{base_name}_edges.jpg"
             enhanced_path = f"processed/{base_name}_enhanced.jpg"
@@ -49,7 +46,6 @@ def home_and_process():
             cv2.imwrite(os.path.join("outputs", edges_path), edges)
             cv2.imwrite(os.path.join("outputs", enhanced_path), enhanced)
 
-            # Simpan file JSON menggunakan nama unik gambar
             with open(os.path.join("outputs/json", f"{base_name}.json"), "w") as f:
                 json.dump(metadata, f, indent=4, default=numpy_serializer)
 
@@ -70,13 +66,11 @@ def home_and_process():
                 
     return render_template('index.html', metadata=None)
 
-# BATCH PROCESSING ENDPOINT: Memproses seluruh file di folder 'dataset/' sekaligus
 @app.route('/batch')
 def run_batch_processing():
     dataset_dir = "dataset"
     output_json_dir = os.path.join("outputs", "json")
     
-    # Pastikan folder output tersedia
     os.makedirs(output_json_dir, exist_ok=True)
     os.makedirs(os.path.join("outputs", "debug"), exist_ok=True)
     os.makedirs(os.path.join("outputs", "processed"), exist_ok=True)
@@ -94,26 +88,21 @@ def run_batch_processing():
         base_name = os.path.splitext(img_name)[0]
         
         try:
-            # 1. Jalankan pipeline pemrosesan
             metadata, debug_mat, edges_mat, enhanced_mat = pipeline.process(img_path)
             
-            # 2. Definisikan jalur teks (string path) sesuai route static_outputs
             debug_path = f"debug/{base_name}_batch_contour.jpg"
             edges_path = f"debug/{base_name}_batch_edges.jpg"
             enhanced_path = f"processed/{base_name}_batch_enhanced.jpg"
             
-            # 3. Simpan matriks gambar ke folder fisik outputs/
             cv2.imwrite(os.path.join("outputs", debug_path), debug_mat)
             cv2.imwrite(os.path.join("outputs", edges_path), edges_mat)
             cv2.imwrite(os.path.join("outputs", enhanced_path), enhanced_mat)
             
-            # 4. Simpan hasil metadata ke dalam file .json di outputs/json/
             json_filename = f"{base_name}.json"
             json_path = os.path.join(output_json_dir, json_filename)
             with open(json_path, 'w') as jf:
                 json.dump(metadata, jf, indent=4, default=numpy_serializer)
                 
-            # 5. Masukkan STRING PATH ke list (bukan matriks numpy-nya)
             batch_results.append({
                 "filename": img_name,
                 "status": "Sukses",
@@ -130,14 +119,13 @@ def run_batch_processing():
                 "filename": img_name,
                 "status": f"Gagal diproses karena: {str(e)}",
                 "detected": False,
-                "debug_img": "",  # String kosong agar bernilai False saat dicek Jinja2 HTML
+                "debug_img": "",  
                 "edges_img": "",
                 "enhanced_img": "",
                 "fields": {"name": "-", "company": "-", "email": "-", "phone": "-"},
                 "time": 0
             })
             
-    # Mengembalikan halaman HTML khusus galeri hasil batch bersama cache buster time
     return render_template('batch_results.html', results=batch_results, total=len(images), time=time.time())
 
 if __name__ == '__main__':

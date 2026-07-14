@@ -2,7 +2,6 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Menggunakan libgl1 (versi terbaru pengganti libgl1-mesa-glx)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libgl1 \

@@ -322,10 +322,7 @@ outputs/
 | Rotated Business Card | Perspective corrected |
 | Low Light | OCR remains readable |
 | Shadow | Document still detected |
-| Multiple Objects | Largest document selected |
 | No Document | Graceful failure |
-| Noisy Background | Stable detection |
-| Partial Blur | OCR partially preserved |
 
 ---
 
